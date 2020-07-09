@@ -70,10 +70,14 @@ export default class HomeRepartidorView extends Component {
           Actions.allMYordersDelivered({dm_id})
       }
      
-      storeRateParter = (viewId) => {
-          Actions.storeRateParter(this.props.responseData.response.partner_info.dm_name)
+      deliverRate = (viewId) => {
+          Actions.deliverRate(this.props.responseData.response.partner_info.dm_name)
       }
 
+      CurrentsOrders = (viewId) => {
+         dm_id = this.state.data.id
+          Actions.CurrentsOrdersView({dm_id})
+      }
 
 
 
@@ -96,7 +100,7 @@ export default class HomeRepartidorView extends Component {
                                   <AirbnbRating isDisabled={true} showRating={false} defaultRating={4}   size={20}/>
                                     <Text style={{ color:'#bdbfc1'}}
                                       onPress={() =>   {
-                                      this.storeRateParter()}
+                                      this.deliverRate()}
                                   }>Calificación:</Text>
 
                          </View>
@@ -106,35 +110,6 @@ export default class HomeRepartidorView extends Component {
                   <Text style={styles.animatedBoxTextSpecial}  h3>{this.state.data.dm_name}</Text>
                 <View style={styles.MenubarContainer}>
 
-                      <View style={styles.menubarItemContainer} >
-
-                    
-                             
-
-                               <Icon
-                                name='credit-card'
-                                type='evilicon'
-                                color='#bdbfc1'
-                                iconStyle={styles.menubarIconLeft}
-                                onPress={() =>   {
-                                    this.ordersDelivered()}
-                                  } 
-                                 
-                               />
-                                <Text style={styles.menubarItemText} >Mis pedidos</Text>
-                            <Icon
-                                name='chevron-right'
-                                type='evilicon'
-                                color='#bdbfc1'
-                                iconStyle={styles.menubarIconRight}
-                                onPress={() =>   {
-                                    this.ordersDelivered()}
-                                  } 
-                                 
-                               />
-
-                          
-                      </View>
                        <View style={styles.menubarItemContainer}>
                           <Icon
                                 name='list-unordered'
@@ -227,6 +202,22 @@ export default class HomeRepartidorView extends Component {
                           iconStyle={styles.cardsmenuSubicon}
                           onPress={() =>   {
                               this.OrdersDelivered()}
+                            }
+                         />
+                    </Card>
+
+                    <Card style={styles.cardsmenu}>
+                        <Text style={styles.cardsmenuSubTitle}   onPress={() =>   {
+                              this.CurrentsOrders()}
+                            } h3>Pedido en curso</Text>
+                        <Icon
+
+                          name='arrow-right'
+                          type='font-awesome'
+                          color='#a9d046'
+                          iconStyle={styles.cardsmenuSubicon}
+                          onPress={() =>   {
+                              this.CurrentsOrders()}
                             }
                          />
                     </Card>
