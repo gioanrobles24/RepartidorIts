@@ -71,7 +71,7 @@ export default class OrderView extends Component {
             },
             body: JSON.stringify({
                 ord_id: this.state.order.ord_id,
-                dm_id: this.state.dm_id,
+                dm_id: dm_id,
             })
         }).then((response) => response.json())
              .then((responseData) => {

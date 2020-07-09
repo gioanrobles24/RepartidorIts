@@ -65,11 +65,13 @@ export default class HomeRepartidorView extends Component {
           Actions.todayOrders({dm_id})
       }
       OrdersDelivered = (viewId) => {
-          Actions.ordersDeliveredPartner(this.props.responseData.response.partner_info.id)
+          dm_id = this.state.data.id
+          // Actions.todayOrders({dm_id})
+          Actions.allMYordersDelivered({dm_id})
       }
      
       storeRateParter = (viewId) => {
-          Actions.storeRateParter(this.props.responseData.response.partner_info.p_name)
+          Actions.storeRateParter(this.props.responseData.response.partner_info.dm_name)
       }
 
 
@@ -105,27 +107,33 @@ export default class HomeRepartidorView extends Component {
                 <View style={styles.MenubarContainer}>
 
                       <View style={styles.menubarItemContainer} >
-                           <Icon
+
+                    
+                             
+
+                               <Icon
                                 name='credit-card'
                                 type='evilicon'
                                 color='#bdbfc1'
                                 iconStyle={styles.menubarIconLeft}
                                 onPress={() =>   {
-                                    this.storeRateParter()}
-                                  }
+                                    this.ordersDelivered()}
+                                  } 
+                                 
                                />
-                                <Text style={styles.menubarItemText} onPress={() =>   {
-                                    this.storeRateParter()}
-                                  } >Reputación</Text>
+                                <Text style={styles.menubarItemText} >Mis pedidos</Text>
                             <Icon
                                 name='chevron-right'
                                 type='evilicon'
                                 color='#bdbfc1'
                                 iconStyle={styles.menubarIconRight}
                                 onPress={() =>   {
-                                    this.Produts()}
-                                  }
+                                    this.ordersDelivered()}
+                                  } 
+                                 
                                />
+
+                          
                       </View>
                        <View style={styles.menubarItemContainer}>
                           <Icon

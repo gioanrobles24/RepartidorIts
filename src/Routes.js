@@ -4,6 +4,7 @@ import  loginRepartidor  from './pages/LoginRepartidor'
 import  HomeRepartidor  from './pages/HomeRepartidor'
 import  TodayOrders from './pages/orders/TodayOrders'
 import  OrderView from './pages/orders/OrderView'
+import  OrdersDeliveredView from './pages/orders/OrdersDelivered'
 export default class Routes extends Component {
     render() {
         return (
@@ -13,6 +14,7 @@ export default class Routes extends Component {
                 	<Scene key="homeRepartidor" hideNavBar={true} component={HomeRepartidor}/>
                     <Scene key="todayOrders" hideNavBar={false} component={TodayOrders}/>
                     <Scene key="orderView" hideNavBar={false} component={OrderView}/>
+                    <Scene key="allMYordersDelivered" hideNavBar={false} component={OrdersDeliveredView}/>
                 </Stack>
             </Router>
         )
