@@ -10,9 +10,6 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@react-native-community/masked-view": "^0.1.7",
-    "@react-native-community/toolbar-android": "^0.1.0-rc.2",
-    "@react-native-community/viewpager": "^3.3.0",
     "react": "16.11.0",
     "react-native": "0.62.2",
     "react-native-elements": "^1.2.7",
@@ -32,7 +29,7 @@
     "react-native-side-menu": "^1.1.3",
     "react-native-simple-dialogs": "^1.2.1",
     "react-native-underline-tabbar": "^1.3.6",
-    "react-native-vector-icons": "^6.6.0",
+    "react-native-vector-icons": "^7.0.0",
     "react-native-xtabbar": "^0.2.1"
   },
   "devDependencies": {
@@ -43,7 +40,9 @@
     "eslint": "^7.4.0",
     "jest": "^26.1.0",
     "metro-react-native-babel-preset": "^0.60.0",
-    "react-test-renderer": "16.11.0"
+    "react-test-renderer": "16.11.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4"
   },
   "jest": {
     "preset": "react-native"
