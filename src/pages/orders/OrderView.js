@@ -28,7 +28,7 @@ export default class OrderView extends Component {
          let dm_id = this.props.dm_id
       		console.log ('ird orden'+ord_id)
             console.log ('ird dm_id'+dm_id)
-                    fetch('http://test.itsontheway.com.ve/api/delivery/orders_detail/'+ord_id, {
+                    fetch('http://test.itsontheway.com.ve/api/partner/p_orders_order_detail/'+ord_id, {
                   method: 'GET',
                   headers: {
                       'Accept': 'application/json',
