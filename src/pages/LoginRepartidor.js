@@ -4,19 +4,16 @@ import {
   Text,
   View,
   TextInput,
-  Button,
   TouchableHighlight,
-  Image,
-  Alert,
-  Switch,
-  ToastAndroid,
   BackHandler,
 } from 'react-native';
 import {Actions} from 'react-native-router-flux';
-import {Icon, Avatar, Badge, withBadge} from 'react-native-elements';
-import {createStackNavigator} from 'react-navigation';
+import {Icon, Avatar} from 'react-native-elements';
+import AsyncStorage from '@react-native-community/async-storage';
+import {setUser} from '../redux/reducers/session';
+import {connect} from 'react-redux';
 
-export default class LoginReparidorView extends Component {
+class LoginReparidorView extends Component {
   constructor(props) {
     super(props);
     this.toggleSwitch = this.toggleSwitch.bind(this);
@@ -24,27 +21,12 @@ export default class LoginReparidorView extends Component {
       showPassword: true,
       icon: 'visibility-off',
     };
-
-    // BackHandler.addEventListener('hardwareBackPress', this.backAction)
-
-    state = {
-      email: '',
-      password: '',
-    };
   }
 
   backAction = () => {
     BackHandler.exitApp();
     return true;
   };
-
-  // componentDidMount() {
-  //       BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress)
-  //   }
-
-  // componentWillUnmount() {
-  //     this.backHandler.remove();
-  //   }
 
   toggleSwitch() {
     this.setState((prevState) => ({
@@ -54,8 +36,6 @@ export default class LoginReparidorView extends Component {
     }));
   }
   onClickListener = (viewId) => {
-    // alert( "Button pressed "+ 'correo:' +this.state.email+ 'password'+ this.state.password)
-
     fetch('http://test.itsontheway.com.ve/api/delivery/login', {
       method: 'POST',
       headers: {
@@ -69,14 +49,19 @@ export default class LoginReparidorView extends Component {
     })
       .then((response) => response.json())
       .then((responseData) => {
-        console.log(responsseData);
         if (responseData.error) {
           alert(
             'Usuario o contraseña incorrectos, por favor intenta nuevamente',
           );
         } else {
-          Actions.homeRepartidor({responseData});
+          return AsyncStorage.setItem(
+            'session',
+            JSON.stringify(responseData),
+          ).then(() => responseData);
         }
+      })
+      .then((resp) => {
+        this.props.login(resp);
       })
       .catch((error) => {
         console.error(error);
@@ -150,6 +135,14 @@ export default class LoginReparidorView extends Component {
     );
   }
 }
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    login: (user) => dispatch(setUser(user)),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(LoginReparidorView);
 
 const styles = StyleSheet.create({
   container: {

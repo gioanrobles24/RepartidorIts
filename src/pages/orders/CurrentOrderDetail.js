@@ -10,10 +10,14 @@ import {
   Alert,
   ImageBackground,
   ScrollView,
+  Linking,
+  Platform,
+  Dimensions,
 } from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import {AirbnbRating, Rating} from 'react-native-ratings';
-import {Card, Badge} from 'react-native-elements';
+import {Card, Badge, Icon} from 'react-native-elements';
+import AutoHeightImage from 'react-native-auto-height-image';
 const image = {uri: 'http://dev.itsontheway.net/api/parnetBanner'};
 
 export default class CurrentsOrdersDetailView extends Component {
@@ -22,6 +26,7 @@ export default class CurrentsOrdersDetailView extends Component {
     this.state = {
       order: '',
       order_productos: [],
+      partner: {},
     };
 
     let ord_id = this.props.ord_id;
@@ -46,11 +51,16 @@ export default class CurrentsOrdersDetailView extends Component {
             {
               order: responseData.response.order,
               order_productos: responseData.response.order_productos,
+              partner: responseData.response.order_partner,
             },
             () => {
               console.log('ORDEN' + JSON.stringify(this.state.order));
               console.log(
                 'PRODUCTOS' + JSON.stringify(this.state.order_productos),
+              );
+              console.log(
+                'PARTNER',
+                JSON.stringify(responseData.response.order_partner),
               );
             },
           );
@@ -66,48 +76,96 @@ export default class CurrentsOrdersDetailView extends Component {
   ratingCompleted(rating) {
     console.log('${rating}');
   }
-  deliverOrden() {
-    console.log('hola');
 
-    fetch('http://test.itsontheway.com.ve/api/delivery/order_was_delivered', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ord_id: this.state.order.ord_id,
-        dm_id: dm_id,
-      }),
-    })
-      .then((response) => response.json())
-      .then((responseData) => {
-        console.log(responseData);
-        if (responseData.error) {
-          alert('a ocurrido un error, por favor intenta nuevamente');
-        } else {
-          Alert.alert(
-            'Confirmas que esta orden fue  entregada?',
-            'gracias por usar nuestras App',
-            [
-              {
-                text: 'Cancelar',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
+  recieveOrder() {
+    console.log('hola');
+    Alert.alert(
+      'Confirmas que has recibido este pedido?',
+      'gracias por usar nuestras App',
+      [
+        {
+          text: 'Cancelar',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'si',
+          onPress: () => {
+            fetch('http://test.itsontheway.com.ve/api/delivery/accept_order', {
+              method: 'POST',
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
               },
+              body: JSON.stringify({
+                ord_id: this.state.order.ord_id,
+                dm_id: this.props.dm_id,
+                ord_status: 5,
+              }),
+            })
+              .then((response) => response.json())
+              .then((responseData) => {
+                console.log(responseData);
+                if (responseData.error) {
+                  alert('a ocurrido un error, por favor intenta nuevamente');
+                } else {
+                  Actions.pop({refresh: {key: 'todayOrders'}});
+                }
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+          },
+        },
+      ],
+      {cancelable: false},
+    );
+  }
+
+  deliverOrden() {
+    Alert.alert(
+      'Confirmas que esta orden fue  entregada?',
+      'gracias por usar nuestras App',
+      [
+        {
+          text: 'Cancelar',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'si',
+          onPress: () => {
+            fetch(
+              'http://test.itsontheway.com.ve/api/delivery/order_was_delivered',
               {
-                text: 'si',
-                onPress: () =>
-                  Actions.pop({refresh: {key: 'CurrentsOrdersView'}}),
+                method: 'POST',
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  ord_id: this.state.order.ord_id,
+                  dm_id: this.props.dm_id,
+                }),
               },
-            ],
-            {cancelable: false},
-          );
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+            )
+              .then((response) => response.json())
+              .then((responseData) => {
+                console.log(responseData);
+                if (responseData.error) {
+                  alert('a ocurrido un error, por favor intenta nuevamente');
+                } else {
+                  Actions.pop({refresh: {key: 'CurrentsOrdersView'}});
+                }
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+          },
+        },
+      ],
+      {cancelable: false},
+    );
   }
 
   render() {
@@ -116,28 +174,57 @@ export default class CurrentsOrdersDetailView extends Component {
     // }
     return (
       <View style={styles.container}>
-        <Image
-          style={styles.partnerimage}
+        <AutoHeightImage
           source={{
-            uri: 'http://dev.itsontheway.net/api/parnetBanner1',
+            uri: `http://test.itsontheway.com.ve/images/socios/${this.state.partner.p_id}/${this.state.partner.profile_pic}`,
           }}
+          width={Dimensions.get('window').width}
         />
-        <Text style={styles.Title} h1>
-          Orden #: {this.state.order.ord_id}
-        </Text>
+        <View>
+          <Icon
+            name="gps-fixed"
+            raised
+            onPress={() => {
+              const scheme = Platform.OS === 'ios' ? 'maps:' : 'geo:';
+              const url =
+                scheme +
+                `${this.state.order.address_lat},${this.state.order.address_lon}?q=${this.state.order.address_lat},${this.state.order.address_lon}`;
+              console.log(url);
+              Linking.openURL(url);
+            }}
+            containerStyle={{
+              position: 'absolute',
+              top: -30,
+              right: 30,
+              // backgroundColor: 'white',
+            }}
+          />
+
+          <Text style={styles.Title} h1>
+            Orden #: {this.state.order.ord_id}
+          </Text>
+        </View>
         <View
           style={{
-            flex: 0.4,
+            flex: 1,
             flexDirection: 'column',
             alignItems: 'flex-start',
-            marginLeft: 10,
+            padding: 10,
           }}>
           <TouchableHighlight
             style={[styles.buttonContainer, styles.loginButton]}
             onPress={() => {
-              this.deliverOrden();
+              if (this.state.order.ord_status === '0') {
+                this.recieveOrder();
+              } else {
+                this.deliverOrden();
+              }
             }}>
-            <Text style={styles.loginText}>pedido fue entregado</Text>
+            <Text style={styles.loginText}>
+              {this.state.order.ord_status === '0'
+                ? 'pedido en camino'
+                : 'pedido fue entregado'}
+            </Text>
           </TouchableHighlight>
 
           <View style={{width: 300}}>
@@ -157,7 +244,7 @@ export default class CurrentsOrdersDetailView extends Component {
             </Text>
           </View>
           <ScrollView>
-            <View style={{width: 500}}>
+            <View>
               <Text style={styles.subTitle} h1>
                 Dirección: {this.state.order.address_description},
                 {this.state.order.municipio},{this.state.order.zone_name}

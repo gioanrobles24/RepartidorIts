@@ -10,10 +10,14 @@ import {
   Alert,
   ImageBackground,
   ScrollView,
+  Linking,
+  Platform,
+  Dimensions,
 } from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import {AirbnbRating, Rating} from 'react-native-ratings';
-import {Card, Badge} from 'react-native-elements';
+import {Card, Badge, Icon} from 'react-native-elements';
+import AutoHeightImage from 'react-native-auto-height-image';
 const image = {uri: 'http://dev.itsontheway.net/api/parnetBanner'};
 
 export default class OrderView extends Component {
@@ -22,6 +26,7 @@ export default class OrderView extends Component {
     this.state = {
       order: '',
       order_productos: [],
+      partner: {},
     };
 
     let ord_id = this.props.ord_id;
@@ -47,6 +52,7 @@ export default class OrderView extends Component {
             {
               order: responseData.response.order,
               order_productos: responseData.response.order_productos,
+              partner: responseData.response.order_partner,
             },
             () => {
               console.log('ORDEN' + JSON.stringify(this.state.order));
@@ -56,6 +62,7 @@ export default class OrderView extends Component {
             },
           );
         } else {
+          console.log(JSON.stringify(responseData, undefined, 2));
           alert('A ocurrido un problema por favor intenta nuevamente');
         }
       })
@@ -69,45 +76,47 @@ export default class OrderView extends Component {
   }
   acceptOrder() {
     console.log('hola');
-
-    fetch('http://test.itsontheway.com.ve/api/delivery/accept_order', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ord_id: this.state.order.ord_id,
-        dm_id: dm_id,
-      }),
-    })
-      .then((response) => response.json())
-      .then((responseData) => {
-        console.log(responseData);
-        if (responseData.error) {
-          alert('a ocurrido un error, por favor intenta nuevamente');
-        } else {
-          Alert.alert(
-            'Confirmas que puedes entregar este pedido?',
-            'gracias por usar nuestras App',
-            [
-              {
-                text: 'Cancelar',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
+    Alert.alert(
+      'Confirmas que puedes entregar este pedido?',
+      'gracias por usar nuestras App',
+      [
+        {
+          text: 'Cancelar',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'si',
+          onPress: () => {
+            fetch('http://test.itsontheway.com.ve/api/delivery/accept_order', {
+              method: 'POST',
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
               },
-              {
-                text: 'si',
-                onPress: () => Actions.pop({refresh: {key: 'todayOrders'}}),
-              },
-            ],
-            {cancelable: false},
-          );
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+              body: JSON.stringify({
+                ord_id: this.state.order.ord_id,
+                dm_id: this.props.dm_id,
+                ord_status: 0,
+              }),
+            })
+              .then((response) => response.json())
+              .then((responseData) => {
+                console.log(responseData);
+                if (responseData.error) {
+                  alert('a ocurrido un error, por favor intenta nuevamente');
+                } else {
+                  Actions.pop({refresh: {key: 'todayOrders'}});
+                }
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+          },
+        },
+      ],
+      {cancelable: false},
+    );
   }
 
   render() {
@@ -116,18 +125,38 @@ export default class OrderView extends Component {
     // }
     return (
       <View style={styles.container}>
-        <Image
-          style={styles.partnerimage}
+        <AutoHeightImage
           source={{
-            uri: 'http://dev.itsontheway.net/api/parnetBanner1',
+            uri: `http://test.itsontheway.com.ve/images/socios/${this.state.partner.p_id}/${this.state.partner.profile_pic}`,
           }}
+          width={Dimensions.get('window').width}
         />
-        <Text style={styles.Title} h1>
-          Orden #: {this.state.order.ord_id}
-        </Text>
+        <View>
+          <Icon
+            name="gps-fixed"
+            raised
+            onPress={() => {
+              const scheme = Platform.OS === 'ios' ? 'maps:' : 'geo:';
+              const url =
+                scheme +
+                `${this.state.order.address_lat},${this.state.order.address_lon}?q=${this.state.order.address_lat},${this.state.order.address_lon}`;
+              console.log(url);
+              Linking.openURL(url);
+            }}
+            containerStyle={{
+              position: 'absolute',
+              top: -30,
+              right: 30,
+              // backgroundColor: 'white',
+            }}
+          />
+          <Text style={styles.Title} h1>
+            Orden #: {this.state.order.ord_id}
+          </Text>
+        </View>
         <View
           style={{
-            flex: 0.4,
+            flex: 1,
             flexDirection: 'column',
             alignItems: 'flex-start',
             marginLeft: 10,

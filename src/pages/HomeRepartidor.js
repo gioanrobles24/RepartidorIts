@@ -20,35 +20,22 @@ import {SideMenu} from 'react-native-side-menu';
 import MenuDrawer from 'react-native-side-drawer';
 import {Card} from 'react-native-shadow-cards';
 import {Icon, Avatar, Badge, withBadge} from 'react-native-elements';
+import {connect} from 'react-redux';
+import {unsetUser} from '../redux/reducers/session';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const image = {uri: 'http://dev.itsontheway.net/api/imgVerde'};
 
-export default class HomeRepartidorView extends Component {
+class HomeRepartidorView extends Component {
   constructor(props) {
     super(props);
     console.log('esto llego a home' + this.props);
     this.state = {
       open: false,
-      data: this.props.responseData.response.partner_info,
-      profile_pic: this.props.responseData.response.partner_banner,
+      data: this.props.user.response.partner_info,
+      profile_pic: this.props.user.response.partner_banner,
       doubleBackToExitPressedOnce: false,
     };
-
-    console.log('lleno la data?' + this.state.data.id);
-    console.log('imagen' + this.state.profile_pic);
-
-    if (this.state.doubleBackToExitPressedOnce) {
-      BackHandler.exitApp();
-    }
-    ToastAndroid.show(
-      'Por favor vuelve a presionar para salir.',
-      ToastAndroid.SHORT,
-    );
-    this.setState({doubleBackToExitPressedOnce: true});
-    setTimeout(() => {
-      this.setState({doubleBackToExitPressedOnce: false});
-    }, 2000);
-    return true;
   }
 
   ratingCompleted(rating) {
@@ -70,7 +57,8 @@ export default class HomeRepartidorView extends Component {
   };
 
   Logout = (viewId) => {
-    Actions.loginpartner('cerrar sesión');
+    AsyncStorage.removeItem('session');
+    this.props.logout();
   };
   TodayOrders = (viewId) => {
     dm_id = this.state.data.id;
@@ -162,7 +150,7 @@ export default class HomeRepartidorView extends Component {
           <TouchableHighlight
             style={[styles.salirboton, styles.salirbotonButton]}
             onPress={() => {
-              this.handleBackButton();
+              this.Logout();
             }}>
             <Text style={styles.salirbotonText}>Salir</Text>
           </TouchableHighlight>
@@ -264,6 +252,18 @@ export default class HomeRepartidorView extends Component {
     );
   }
 }
+const mapDispatchToProps = (dispatch) => {
+  return {
+    logout: () => dispatch(unsetUser()),
+  };
+};
+const mapStateToProps = (state, ownProps) => {
+  return {
+    user: state.session.user,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeRepartidorView);
 
 const styles = StyleSheet.create({
   container: {
