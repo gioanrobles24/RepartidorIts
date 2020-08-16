@@ -54,14 +54,15 @@ class LoginReparidorView extends Component {
           throw responseData;
         } else {
           console.log(responseData);
-          return request(`${config.pushUrl}/session`, {
-            method: 'POST',
-            body: JSON.stringify({
-              userId: responseData.response.partner_info.id,
-              token: this.props.pushToken,
-              type: 'delivery',
-            }),
-          }).then(() => responseData);
+          return responseData;
+          // return request(`${config.pushUrl}/session`, {
+          //   method: 'POST',
+          //   body: JSON.stringify({
+          //     userId: responseData.response.partner_info.id,
+          //     token: this.props.pushToken,
+          //     type: 'delivery',
+          //   }),
+          // }).then(() => responseData);
         }
       })
       .then((resp) => {
