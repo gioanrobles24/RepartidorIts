@@ -12,6 +12,8 @@ import {Icon, Avatar} from 'react-native-elements';
 import AsyncStorage from '@react-native-community/async-storage';
 import {setUser} from '../redux/reducers/session';
 import {connect} from 'react-redux';
+import {config} from '../config';
+import request from '../utils/request';
 
 class LoginReparidorView extends Component {
   constructor(props) {
@@ -36,7 +38,7 @@ class LoginReparidorView extends Component {
     }));
   }
   onClickListener = (viewId) => {
-    fetch('http://test.itsontheway.com.ve/api/delivery/login', {
+    request(`${config.apiUrl}/delivery/login`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -47,24 +49,32 @@ class LoginReparidorView extends Component {
         password: this.state.password,
       }),
     })
-      .then((response) => response.json())
       .then((responseData) => {
         if (responseData.error) {
-          alert(
-            'Usuario o contraseña incorrectos, por favor intenta nuevamente',
-          );
+          throw responseData;
         } else {
-          return AsyncStorage.setItem(
-            'session',
-            JSON.stringify(responseData),
-          ).then(() => responseData);
+          console.log(responseData);
+          return request(`${config.pushUrl}/session`, {
+            method: 'POST',
+            body: JSON.stringify({
+              userId: responseData.response.partner_info.id,
+              token: this.props.pushToken,
+              type: 'delivery',
+            }),
+          }).then(() => responseData);
         }
+      })
+      .then((resp) => {
+        return AsyncStorage.setItem('session', JSON.stringify(resp)).then(
+          () => resp,
+        );
       })
       .then((resp) => {
         this.props.login(resp);
       })
       .catch((error) => {
-        console.error(error);
+        console.log(error);
+        alert('Usuario o contraseña incorrectos, por favor intenta nuevamente');
       });
   };
 
@@ -135,6 +145,11 @@ class LoginReparidorView extends Component {
     );
   }
 }
+const mapStateToProps = (state) => {
+  return {
+    pushToken: state.session.pushToken,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -142,7 +157,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(LoginReparidorView);
+export default connect(mapStateToProps, mapDispatchToProps)(LoginReparidorView);
 
 const styles = StyleSheet.create({
   container: {

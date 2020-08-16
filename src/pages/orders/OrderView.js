@@ -18,6 +18,8 @@ import {Actions} from 'react-native-router-flux';
 import {AirbnbRating, Rating} from 'react-native-ratings';
 import {Card, Badge, Icon} from 'react-native-elements';
 import AutoHeightImage from 'react-native-auto-height-image';
+import {config} from '../../config';
+import request from '../../utils/request';
 const image = {uri: 'http://dev.itsontheway.net/api/parnetBanner'};
 
 export default class OrderView extends Component {
@@ -33,18 +35,7 @@ export default class OrderView extends Component {
     let dm_id = this.props.dm_id;
     console.log('ird orden' + ord_id);
     console.log('ird dm_id' + dm_id);
-    fetch(
-      'http://test.itsontheway.com.ve/api/partner/p_orders_order_detail/' +
-        ord_id,
-      {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      },
-    )
-      .then((response) => response.json())
+    request(`${config.apiUrl}/partner/p_orders_order_detail/${ord_id}`)
       .then((responseData) => {
         console.log(responseData);
         if (responseData.status === '200') {
@@ -62,12 +53,11 @@ export default class OrderView extends Component {
             },
           );
         } else {
-          console.log(JSON.stringify(responseData, undefined, 2));
-          alert('A ocurrido un problema por favor intenta nuevamente');
+          throw new Error(responseData);
         }
       })
       .catch((error) => {
-        console.error(error);
+        Alert.alert('Error', 'intente nuevamente');
       });
   }
 
@@ -75,7 +65,6 @@ export default class OrderView extends Component {
     console.log('${rating}');
   }
   acceptOrder() {
-    console.log('hola');
     Alert.alert(
       'Confirmas que puedes entregar este pedido?',
       'gracias por usar nuestras App',
@@ -88,7 +77,7 @@ export default class OrderView extends Component {
         {
           text: 'si',
           onPress: () => {
-            fetch('http://test.itsontheway.com.ve/api/delivery/accept_order', {
+            fetch(`${config.apiUrl}/delivery/accept_order`, {
               method: 'POST',
               headers: {
                 Accept: 'application/json',
@@ -104,13 +93,13 @@ export default class OrderView extends Component {
               .then((responseData) => {
                 console.log(responseData);
                 if (responseData.error) {
-                  alert('a ocurrido un error, por favor intenta nuevamente');
+                  throw new Error(responseData.error);
                 } else {
                   Actions.pop({refresh: {key: 'todayOrders'}});
                 }
               })
               .catch((error) => {
-                console.error(error);
+                Alert.alert('Error', 'intente nuevamente');
               });
           },
         },
@@ -120,17 +109,16 @@ export default class OrderView extends Component {
   }
 
   render() {
-    // for (let Object of this.state.data) {
-    //         console.log(Object.prod_name);
-    // }
     return (
       <View style={styles.container}>
-        <AutoHeightImage
-          source={{
-            uri: `http://test.itsontheway.com.ve/images/socios/${this.state.partner.p_id}/${this.state.partner.profile_pic}`,
-          }}
-          width={Dimensions.get('window').width}
-        />
+        {this.state.partner && (
+          <AutoHeightImage
+            source={{
+              uri: `${config.imagesUrl}/images/socios/${this.state.partner.p_id}/${this.state.partner.profile_pic}`,
+            }}
+            width={Dimensions.get('window').width}
+          />
+        )}
         <View>
           <Icon
             name="gps-fixed"

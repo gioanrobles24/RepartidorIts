@@ -15,6 +15,7 @@ import {Card} from 'react-native-shadow-cards';
 import {Icon, Avatar, Badge, withBadge} from 'react-native-elements';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import TabBar from 'react-native-underline-tabbar';
+import {config} from '../../config';
 
 export default class OrdersDeliveredView extends Component {
   constructor(props) {
@@ -27,16 +28,13 @@ export default class OrdersDeliveredView extends Component {
     console.log('hola aca', this.props.dm_id);
     let dm_id = this.props.dm_id;
 
-    fetch(
-      'http://test.itsontheway.com.ve/api/delivery/orders_delivered/' + dm_id,
-      {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
+    fetch(`${config.apiUrl}/delivery/orders_delivered/${dm_id}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
-    )
+    })
       .then((response) => response.json())
       .then((responseData) => {
         console.log(responseData);

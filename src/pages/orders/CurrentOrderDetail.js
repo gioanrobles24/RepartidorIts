@@ -18,6 +18,8 @@ import {Actions} from 'react-native-router-flux';
 import {AirbnbRating, Rating} from 'react-native-ratings';
 import {Card, Badge, Icon} from 'react-native-elements';
 import AutoHeightImage from 'react-native-auto-height-image';
+import {config} from '../../config';
+import request from '../../utils/request';
 const image = {uri: 'http://dev.itsontheway.net/api/parnetBanner'};
 
 export default class CurrentsOrdersDetailView extends Component {
@@ -33,16 +35,13 @@ export default class CurrentsOrdersDetailView extends Component {
     let dm_id = this.props.dm_id;
     console.log('ird orden' + ord_id);
     console.log('ird dm_id' + dm_id);
-    fetch(
-      'http://test.itsontheway.com.ve/api/delivery/orders_detail/' + ord_id,
-      {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
+    fetch(`${config.apiUrl}/delivery/orders_detail/${ord_id}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
-    )
+    })
       .then((response) => response.json())
       .then((responseData) => {
         console.log(responseData);
@@ -54,7 +53,9 @@ export default class CurrentsOrdersDetailView extends Component {
               partner: responseData.response.order_partner,
             },
             () => {
-              console.log('ORDEN' + JSON.stringify(this.state.order));
+              console.log(
+                'ORDEN' + JSON.stringify(responseData.response.order),
+              );
               console.log(
                 'PRODUCTOS' + JSON.stringify(this.state.order_productos),
               );
@@ -78,7 +79,6 @@ export default class CurrentsOrdersDetailView extends Component {
   }
 
   recieveOrder() {
-    console.log('hola');
     Alert.alert(
       'Confirmas que has recibido este pedido?',
       'gracias por usar nuestras App',
@@ -91,29 +91,27 @@ export default class CurrentsOrdersDetailView extends Component {
         {
           text: 'si',
           onPress: () => {
-            fetch('http://test.itsontheway.com.ve/api/delivery/accept_order', {
+            request(`${config.apiUrl}/delivery/accept_order`, {
               method: 'POST',
-              headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-              },
               body: JSON.stringify({
                 ord_id: this.state.order.ord_id,
                 dm_id: this.props.dm_id,
                 ord_status: 5,
               }),
             })
-              .then((response) => response.json())
               .then((responseData) => {
-                console.log(responseData);
                 if (responseData.error) {
-                  alert('a ocurrido un error, por favor intenta nuevamente');
+                  throw new Error(responseData);
                 } else {
+                  request(`${config.pushUrl}/order-in-the-way`, {
+                    method: 'POST',
+                    body: JSON.stringify({clientId: this.state.order.cl_id}),
+                  });
                   Actions.pop({refresh: {key: 'todayOrders'}});
                 }
               })
               .catch((error) => {
-                console.error(error);
+                Alert.alert('Error', 'intente nuevamente');
               });
           },
         },
@@ -135,32 +133,41 @@ export default class CurrentsOrdersDetailView extends Component {
         {
           text: 'si',
           onPress: () => {
-            fetch(
-              'http://test.itsontheway.com.ve/api/delivery/order_was_delivered',
-              {
-                method: 'POST',
-                headers: {
-                  Accept: 'application/json',
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  ord_id: this.state.order.ord_id,
-                  dm_id: this.props.dm_id,
-                }),
-              },
-            )
-              .then((response) => response.json())
-              .then((responseData) => {
-                console.log(responseData);
-                if (responseData.error) {
-                  alert('a ocurrido un error, por favor intenta nuevamente');
-                } else {
-                  Actions.pop({refresh: {key: 'CurrentsOrdersView'}});
-                }
-              })
-              .catch((error) => {
-                console.error(error);
-              });
+            request(`${config.pushUrl}/order-delivered`, {
+              method: 'POST',
+              body: JSON.stringify({
+                partnerId: this.state.partner.p_id,
+                orderId: this.state.order.ord_id,
+              }),
+            });
+
+            // request(`${config.apiUrl}/delivery/order_was_delivered`, {
+            //   method: 'POST',
+            //   body: JSON.stringify({
+            //     ord_id: this.state.order.ord_id,
+            //     dm_id: this.props.dm_id,
+            //   }),
+            // })
+            //   .then((responseData) => {
+            //     console.log(responseData);
+            //     if (responseData.error) {
+            //       alert('a ocurrido un error, por favor intenta nuevamente');
+            //     } else {
+            //       request(`${config.pushUrl}/order-delivered`, {
+            //         method: 'POST',
+            //         body: JSON.stringify({
+            //           partnerId: this.state.partner.p_id,
+            //           orderId: this.state.order.ord_id,
+            //         }),
+            //       });
+            //     }
+            //   })
+            //   .then((resp) => {
+            //     Actions.pop({refresh: {key: 'CurrentsOrdersView'}});
+            //   })
+            //   .catch((error) => {
+            //     console.error(error);
+            //   });
           },
         },
       ],
@@ -174,12 +181,14 @@ export default class CurrentsOrdersDetailView extends Component {
     // }
     return (
       <View style={styles.container}>
-        <AutoHeightImage
-          source={{
-            uri: `http://test.itsontheway.com.ve/images/socios/${this.state.partner.p_id}/${this.state.partner.profile_pic}`,
-          }}
-          width={Dimensions.get('window').width}
-        />
+        {this.state.partner && (
+          <AutoHeightImage
+            source={{
+              uri: `${config.imagesUrl}/images/socios/${this.state.partner.p_id}/${this.state.partner.profile_pic}`,
+            }}
+            width={Dimensions.get('window').width}
+          />
+        )}
         <View>
           <Icon
             name="gps-fixed"
@@ -222,8 +231,8 @@ export default class CurrentsOrdersDetailView extends Component {
             }}>
             <Text style={styles.loginText}>
               {this.state.order.ord_status === '0'
-                ? 'pedido en camino'
-                : 'pedido fue entregado'}
+                ? 'Pedido en camino'
+                : 'Pedido fue entregado'}
             </Text>
           </TouchableHighlight>
 

@@ -14,6 +14,7 @@ import {
 import {Actions} from 'react-native-router-flux';
 import {AirbnbRating, Rating} from 'react-native-ratings';
 import {Card, Badge} from 'react-native-elements';
+import {config} from '../../config';
 const image = {uri: 'http://dev.itsontheway.net/api/parnetBanner'};
 
 export default class CurrentOrderView extends Component {
@@ -25,16 +26,13 @@ export default class CurrentOrderView extends Component {
 
     let dm_id = this.props.dm_id;
     console.log('ird dm_id' + dm_id);
-    fetch(
-      'http://test.itsontheway.com.ve/api/delivery/current_orders/' + dm_id,
-      {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
+    fetch(`${config.apiUrl}/delivery/current_orders/${dm_id}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
-    )
+    })
       .then((response) => response.json())
       .then((responseData) => {
         console.log(responseData);
@@ -59,48 +57,6 @@ export default class CurrentOrderView extends Component {
   ratingCompleted(rating) {
     console.log('${rating}');
   }
-  // acceptOrder() {
-  //     console.log('hola');
-
-  //      fetch('http://test.itsontheway.com.ve/api/delivery/accept_order', {
-  //         method: 'POST',
-  //         headers: {
-  //             'Accept': 'application/json',
-  //             'Content-Type': 'application/json'
-  //         },
-  //         body: JSON.stringify({
-  //             ord_id: this.state.order.ord_id,
-  //             dm_id: dm_id,
-  //         })
-  //     }).then((response) => response.json())
-  //          .then((responseData) => {
-  //            console.log(responseData)
-  //              if (responseData.error){
-  //                  alert('a ocurrido un error, por favor intenta nuevamente')
-  //                }
-  //              else{
-
-  //                       Alert.alert(
-  //                         "Confirmanos",
-  //                         "Por favor Confirmanos si entregaste el pedido al cliente",
-  //                         [
-  //                           {
-  //                             text: "Cancelar",
-  //                             onPress: () => console.log("Cancel Pressed"),
-  //                             style: "cancel"
-  //                           },
-  //                           { text: "si", onPress: () => Actions.pop({ refresh: {key: 'homeRepartidor' }})
-
-  //                            }
-  //                         ],
-  //                         { cancelable: false }
-  //                       );
-
-  //              }
-  //   }).catch((error) =>{
-  //     console.error(error);
-  //   })
-  // }
 
   orderCurrentViewPartner(id) {
     let ord_id = id;
