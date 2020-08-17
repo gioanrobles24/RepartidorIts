@@ -23,6 +23,8 @@ import {Icon, Avatar, Badge, withBadge} from 'react-native-elements';
 import {connect} from 'react-redux';
 import {unsetUser} from '../redux/reducers/session';
 import AsyncStorage from '@react-native-community/async-storage';
+import request from '../utils/request';
+import {config} from '../config';
 
 const image = {uri: 'http://dev.itsontheway.net/api/imgVerde'};
 
@@ -57,6 +59,9 @@ class HomeRepartidorView extends Component {
   };
 
   Logout = (viewId) => {
+    request(`${config.pushUrl}/session/${this.props.pushToken}`, {
+      method: 'DELETE',
+    });
     AsyncStorage.removeItem('session');
     this.props.logout();
   };
@@ -260,6 +265,7 @@ const mapDispatchToProps = (dispatch) => {
 const mapStateToProps = (state, ownProps) => {
   return {
     user: state.session.user,
+    pushUrl: state.session.pushUrl,
   };
 };
 
