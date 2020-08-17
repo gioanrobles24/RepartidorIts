@@ -35,14 +35,13 @@ export default class CurrentsOrdersDetailView extends Component {
     let dm_id = this.props.dm_id;
     console.log('ird orden' + ord_id);
     console.log('ird dm_id' + dm_id);
-    fetch(`${config.apiUrl}/delivery/orders_detail/${ord_id}`, {
+    request(`${config.apiUrl}/delivery/orders_detail/${ord_id}`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
     })
-      .then((response) => response.json())
       .then((responseData) => {
         console.log(responseData);
         if (responseData.status === '200') {
@@ -190,24 +189,35 @@ export default class CurrentsOrdersDetailView extends Component {
           />
         )}
         <View>
-          <Icon
-            name="gps-fixed"
-            raised
-            onPress={() => {
-              const scheme = Platform.OS === 'ios' ? 'maps:' : 'geo:';
-              const url =
-                scheme +
-                `${this.state.order.address_lat},${this.state.order.address_lon}?q=${this.state.order.address_lat},${this.state.order.address_lon}`;
-              console.log(url);
-              Linking.openURL(url);
-            }}
-            containerStyle={{
+          <View
+            style={{
               position: 'absolute',
               top: -30,
               right: 30,
+              flexDirection: 'row',
               // backgroundColor: 'white',
-            }}
-          />
+            }}>
+            <Icon
+              name="gps-fixed"
+              raised
+              onPress={() => {
+                const scheme = Platform.OS === 'ios' ? 'maps:' : 'geo:';
+                const url =
+                  scheme +
+                  `${this.state.order.address_lat},${this.state.order.address_lon}?q=${this.state.order.address_lat},${this.state.order.address_lon}`;
+                console.log(url);
+                Linking.openURL(url);
+              }}
+            />
+            <Icon
+              name="phone"
+              raised
+              onPress={() => {
+                const scheme = Platform.OS === 'ios' ? 'telprompt:' : 'tel:';
+                Linking.openURL(scheme + this.state.order.cl_phone_1);
+              }}
+            />
+          </View>
 
           <Text style={styles.Title} h1>
             Orden #: {this.state.order.ord_id}

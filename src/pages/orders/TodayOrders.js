@@ -18,6 +18,7 @@ import MenuDrawer from 'react-native-side-drawer';
 import {Card} from 'react-native-shadow-cards';
 import {Icon, Avatar, Badge, withBadge} from 'react-native-elements';
 import {config} from '../../config';
+import request from '../../utils/request';
 const image = {uri: 'http://dev.itsontheway.net/api/imgBlanca'};
 export default class TodayOrders extends Component {
   constructor(props) {
@@ -30,14 +31,13 @@ export default class TodayOrders extends Component {
     console.log('hola', this.props.dm_id);
     let dm_id = this.props.dm_id;
 
-    fetch(`${config.apiUrl}/delivery/ords_to_repartidor`, {
+    request(`${config.apiUrl}/delivery/ords_to_repartidor`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
     })
-      .then((response) => response.json())
       .then((responseData) => {
         console.log(responseData);
         if (responseData.response.status === '200') {
