@@ -99,14 +99,14 @@ export default class TodayOrders extends Component {
                 <Card
                   style={styles.cardOrder}
                   onPress={() => {
-                    this.orderViewPartner(Object);
+                    this.orderViewPartner(Object.id);
                   }}>
                   <Avatar rounded size="medium" source={image} />
                   <Text
                     style={styles.cardOrderSubTitle}
                     h3
                     onPress={() => {
-                      this.orderViewPartner(Object);
+                      this.orderViewPartner(Object.id);
                     }}>
                     Orden #:{Object.id}
                   </Text>
