@@ -58,6 +58,7 @@ export default class CurrentOrderView extends Component {
   }
 
   componentDidMount() {
+    this.fetchOrders();
     this.interval = setInterval(() => this.fetchOrders(), 30000);
   }
 

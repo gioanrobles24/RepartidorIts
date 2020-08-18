@@ -62,6 +62,7 @@ export default class TodayOrders extends Component {
   }
 
   componentDidMount() {
+    this.fetchOrders();
     this.interval = setInterval(() => this.fetchOrders(), 30000);
   }
 
