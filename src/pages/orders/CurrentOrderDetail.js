@@ -132,41 +132,33 @@ export default class CurrentsOrdersDetailView extends Component {
         {
           text: 'si',
           onPress: () => {
-            request(`${config.pushUrl}/order-delivered`, {
+            request(`${config.apiUrl}/delivery/order_was_delivered`, {
               method: 'POST',
               body: JSON.stringify({
-                partnerId: this.state.partner.p_id,
-                orderId: this.state.order.ord_id,
+                ord_id: this.state.order.ord_id,
+                dm_id: this.props.dm_id,
               }),
-            });
-
-            // request(`${config.apiUrl}/delivery/order_was_delivered`, {
-            //   method: 'POST',
-            //   body: JSON.stringify({
-            //     ord_id: this.state.order.ord_id,
-            //     dm_id: this.props.dm_id,
-            //   }),
-            // })
-            //   .then((responseData) => {
-            //     console.log(responseData);
-            //     if (responseData.error) {
-            //       alert('a ocurrido un error, por favor intenta nuevamente');
-            //     } else {
-            //       request(`${config.pushUrl}/order-delivered`, {
-            //         method: 'POST',
-            //         body: JSON.stringify({
-            //           partnerId: this.state.partner.p_id,
-            //           orderId: this.state.order.ord_id,
-            //         }),
-            //       });
-            //     }
-            //   })
-            //   .then((resp) => {
-            //     Actions.pop({refresh: {key: 'CurrentsOrdersView'}});
-            //   })
-            //   .catch((error) => {
-            //     console.error(error);
-            //   });
+            })
+              .then((responseData) => {
+                console.log(responseData);
+                if (responseData.error) {
+                  alert('a ocurrido un error, por favor intenta nuevamente');
+                } else {
+                  request(`${config.pushUrl}/order-delivered`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                      partnerId: this.state.partner.p_id,
+                      orderId: this.state.order.ord_id,
+                    }),
+                  });
+                }
+              })
+              .then((resp) => {
+                Actions.pop({refresh: {key: 'CurrentsOrdersView'}});
+              })
+              .catch((error) => {
+                console.error(error);
+              });
           },
         },
       ],
