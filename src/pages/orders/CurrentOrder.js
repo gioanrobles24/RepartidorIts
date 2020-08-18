@@ -15,6 +15,8 @@ import {Actions} from 'react-native-router-flux';
 import {AirbnbRating, Rating} from 'react-native-ratings';
 import {Card, Badge} from 'react-native-elements';
 import {config} from '../../config';
+import request from '../../utils/request';
+import {green} from '../../colors';
 const image = {uri: 'http://dev.itsontheway.net/api/parnetBanner'};
 
 export default class CurrentOrderView extends Component {
@@ -23,17 +25,18 @@ export default class CurrentOrderView extends Component {
     this.state = {
       orders: [],
     };
+  }
 
+  fetchOrders() {
     let dm_id = this.props.dm_id;
     console.log('ird dm_id' + dm_id);
-    fetch(`${config.apiUrl}/delivery/current_orders/${dm_id}`, {
+    request(`${config.apiUrl}/delivery/current_orders/${dm_id}`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
     })
-      .then((response) => response.json())
       .then((responseData) => {
         console.log(responseData);
         if (responseData.status === '200') {
@@ -52,6 +55,14 @@ export default class CurrentOrderView extends Component {
       .catch((error) => {
         console.error(error);
       });
+  }
+
+  componentDidMount() {
+    this.interval = setInterval(() => this.fetchOrders(), 30000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   ratingCompleted(rating) {
@@ -88,8 +99,9 @@ export default class CurrentOrderView extends Component {
                   </Text>
                   <Badge
                     containerStyle={styles.cardBadge}
-                    value="Disponible"
-                    status="primary"
+                    value={getStatus(Object.ord_status).label}
+                    status={getStatus(Object.ord_status).color}
+                    // status="primary"
                   />
                 </Card>
               </TouchableHighlight>
@@ -98,6 +110,27 @@ export default class CurrentOrderView extends Component {
         </View>
       </View>
     );
+  }
+}
+
+export function getStatus(id) {
+  switch (id) {
+    case '0':
+      return {color: 'primary', label: 'Repartidor Asignado'};
+    case '1':
+      return {color: green, label: 'Sin Aprobar'};
+    case '2':
+      return {color: green, label: 'Aprobada por Admin'};
+    case '3':
+      return {color: green, label: 'Aprobada por Socio'};
+    case '4':
+      return {color: green, label: 'Entregada Cliente'};
+    case '5':
+      return {color: 'warning', label: `It's on the way`};
+    case '6':
+      return {color: 'success', label: 'Espera de Repartidor'};
+    default:
+      return {color: green, label: 'Desconocido'};
   }
 }
 

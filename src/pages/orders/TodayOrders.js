@@ -29,6 +29,9 @@ export default class TodayOrders extends Component {
     };
 
     console.log('hola', this.props.dm_id);
+  }
+
+  fetchOrders() {
     let dm_id = this.props.dm_id;
 
     request(`${config.apiUrl}/delivery/ords_to_repartidor`, {
@@ -58,25 +61,25 @@ export default class TodayOrders extends Component {
       });
   }
 
+  componentDidMount() {
+    this.interval = setInterval(() => this.fetchOrders(), 30000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
   orderViewPartner = (id) => {
     console.log('id orden', id);
     let ord_id = id;
     let dm_id = this.props.dm_id;
     Actions.orderView({dm_id, ord_id});
   };
-  // productView = (Id,name,prod_price_bs) => {
-  //         Actions.productviewPartner(Id)
-  //     }
 
   toggleOpen = () => {
     this.setState({open: !this.state.open});
   };
 
   render() {
-    // for (let Object of this.state.orders) {
-    //          console.log(Object.prod_name);
-    //  }
-
     return (
       <View style={styles.container}>
         <View style={styles.header}>
