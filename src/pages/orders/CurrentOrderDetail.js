@@ -99,18 +99,19 @@ export default class CurrentsOrdersDetailView extends Component {
               }),
             })
               .then((responseData) => {
-                if (responseData.error) {
-                  throw new Error(responseData);
+                if (responseData.response.error) {
+                  throw new Error(responseData.response.error);
                 } else {
+                  console.log(responseData);
                   request(`${config.pushUrl}/order-in-the-way`, {
                     method: 'POST',
                     body: JSON.stringify({clientId: this.state.order.cl_id}),
                   });
-                  Actions.pop({refresh: {key: 'todayOrders'}});
+                  Actions.pop({refresh: {key: 'CurrentsOrdersView'}});
                 }
               })
               .catch((error) => {
-                Alert.alert('Error', 'intente nuevamente');
+                Alert.alert('Error', error.message);
               });
           },
         },
