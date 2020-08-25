@@ -19,7 +19,7 @@ import {Card} from 'react-native-shadow-cards';
 import {Icon, Avatar, Badge, withBadge} from 'react-native-elements';
 import {config} from '../../config';
 import request from '../../utils/request';
-const image = {uri: 'http://dev.itsontheway.net/api/imgBlanca'};
+const image = {uri: `${config.apiUrl}/imgVerdePerfil`};
 export default class TodayOrders extends Component {
   constructor(props) {
     super(props);

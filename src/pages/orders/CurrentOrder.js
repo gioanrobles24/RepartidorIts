@@ -18,7 +18,7 @@ import {Card} from 'react-native-shadow-cards';
 import {config} from '../../config';
 import request from '../../utils/request';
 import {green} from '../../colors';
-const image = {uri: 'http://dev.itsontheway.net/api/imgBlanca'};
+const image = {uri: `${config.apiUrl}/imgVerdePerfil`};
 
 export default class CurrentOrderView extends Component {
   constructor(props) {
