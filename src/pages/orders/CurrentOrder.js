@@ -13,11 +13,12 @@ import {
 } from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import {AirbnbRating, Rating} from 'react-native-ratings';
-import {Card, Badge} from 'react-native-elements';
+import {Badge, Avatar} from 'react-native-elements';
+import {Card} from 'react-native-shadow-cards';
 import {config} from '../../config';
 import request from '../../utils/request';
 import {green} from '../../colors';
-const image = {uri: 'http://dev.itsontheway.net/api/parnetBanner'};
+const image = {uri: 'http://dev.itsontheway.net/api/imgBlanca'};
 
 export default class CurrentOrderView extends Component {
   constructor(props) {
@@ -95,6 +96,8 @@ export default class CurrentOrderView extends Component {
                   this.orderCurrentViewPartner(Object.id);
                 }}>
                 <Card style={styles.cardOrder}>
+                  <Avatar rounded size="medium" source={image} />
+
                   <Text style={styles.cardOrderSubTitle} h3>
                     Orden #:{Object.id}
                   </Text>
@@ -102,7 +105,6 @@ export default class CurrentOrderView extends Component {
                     containerStyle={styles.cardBadge}
                     value={getStatus(Object.ord_status).label}
                     status={getStatus(Object.ord_status).color}
-                    // status="primary"
                   />
                 </Card>
               </TouchableHighlight>
@@ -142,15 +144,32 @@ const styles = StyleSheet.create({
     // justifyContent: "center",
   },
 
+  cardOrdercontainer: {
+    flexDirection: 'row',
+  },
+
+  cardOrder: {
+    marginTop: 30,
+    padding: 20,
+    margin: 20,
+    flexDirection: 'row',
+    elevation: 8,
+  },
+  cardOrderSubTitle: {
+    fontSize: 20,
+    marginLeft: 10,
+    alignSelf: 'center',
+  },
+
+  cardBadge: {
+    alignSelf: 'center',
+  },
+
   menuText: {
     fontSize: 25,
     alignSelf: 'flex-end',
     color: '#373535',
   },
-  cardBadge: {
-    alignSelf: 'center',
-  },
-
   partnerimage: {
     flex: 0.5,
   },
