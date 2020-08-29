@@ -223,21 +223,29 @@ export default class CurrentsOrdersDetailView extends Component {
             alignItems: 'flex-start',
             padding: 10,
           }}>
-          <TouchableHighlight
-            style={[styles.buttonContainer, styles.loginButton]}
-            onPress={() => {
-              if (this.state.order.ord_status === '0') {
+          {this.state.order.ord_status === '6' && (
+            <TouchableHighlight
+              style={[styles.buttonContainer, styles.loginButton]}
+              onPress={() => {
+                // if (this.state.order.ord_status === '0') {
                 this.recieveOrder();
-              } else {
+                // } else {
+                //   this.deliverOrden();
+                // }
+              }}>
+              <Text style={styles.loginText}>Pedido en Camino</Text>
+            </TouchableHighlight>
+          )}
+
+          {this.state.order.ord_status === '5' && (
+            <TouchableHighlight
+              style={[styles.buttonContainer, styles.loginButton]}
+              onPress={() => {
                 this.deliverOrden();
-              }
-            }}>
-            <Text style={styles.loginText}>
-              {this.state.order.ord_status === '0'
-                ? 'Pedido en camino'
-                : 'Pedido fue entregado'}
-            </Text>
-          </TouchableHighlight>
+              }}>
+              <Text style={styles.loginText}>Pedido Entregado</Text>
+            </TouchableHighlight>
+          )}
 
           <View style={{width: 300}}>
             <Text style={styles.SubTitle2} h1>

@@ -79,7 +79,8 @@ export default class CurrentOrderView extends Component {
   render() {
     // for (let Object of this.state.data) {
     //         console.log(Object.prod_name);
-    // }
+    // }`
+    console.log(JSON.stringify(this.state.orders, undefined, 2));
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -100,6 +101,7 @@ export default class CurrentOrderView extends Component {
 
                   <Text style={styles.cardOrderSubTitle} h3>
                     Orden #:{Object.id}
+                    {/* {getStatus(Object.ord_status).label} */}
                   </Text>
                   <Badge
                     containerStyle={styles.cardBadge}
@@ -117,23 +119,24 @@ export default class CurrentOrderView extends Component {
 }
 
 export function getStatus(id) {
+  console.log(id);
   switch (id) {
     case '0':
       return {color: 'primary', label: 'Repartidor Asignado'};
     case '1':
-      return {color: green, label: 'Sin Aprobar'};
+      return {color: 'primary', label: 'Sin Aprobar'};
     case '2':
-      return {color: green, label: 'Aprobada por Admin'};
+      return {color: 'primary', label: 'Aprobada por Admin'};
     case '3':
-      return {color: green, label: 'Aprobada por Socio'};
+      return {color: 'primary', label: 'Aprobada por Socio'};
     case '4':
-      return {color: green, label: 'Entregada Cliente'};
+      return {color: 'primary', label: 'Entregada Cliente'};
     case '5':
       return {color: 'warning', label: `It's on the way`};
     case '6':
       return {color: 'success', label: 'Espera de Repartidor'};
     default:
-      return {color: green, label: 'Desconocido'};
+      return {color: 'primary', label: 'Desconocido'};
   }
 }
 
