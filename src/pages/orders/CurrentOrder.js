@@ -134,7 +134,7 @@ export function getStatus(id) {
     case '5':
       return {color: 'warning', label: `It's on the way`};
     case '6':
-      return {color: 'success', label: 'Espera de Repartidor'};
+      return {color: 'success', label: 'Listo para Retirar'};
     default:
       return {color: 'primary', label: 'Desconocido'};
   }
