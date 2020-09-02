@@ -8,6 +8,9 @@ import OrdersDeliveredView from './pages/orders/OrdersDelivered';
 import CurrentOrderView from './pages/orders/CurrentOrder';
 import CurrentsOrdersDetailView from './pages/orders/CurrentOrderDetail';
 import RepartidorRateView from './pages/RepartidorRate';
+import GananciasView from './pages/Ganancias';
+import GananciasSemanalView from './pages/GananciasSemanal';
+import HistorialMensualView from './pages/HistorialMensual';
 import {useSelector, useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
 import {setUser} from './redux/reducers/session';
@@ -91,6 +94,21 @@ function AuthApp() {
           key="deliverRate"
           hideNavBar={false}
           component={RepartidorRateView}
+        />
+        <Scene
+          key="ganancias"
+          hideNavBar={false}
+          component={GananciasView}
+        />
+        <Scene
+          key="gananciasSemanal"
+          hideNavBar={false}
+          component={GananciasSemanalView}
+        />
+        <Scene
+          key="historialMensual"
+          hideNavBar={false}
+          component={HistorialMensualView}
         />
       </Scene>
     </Router>
