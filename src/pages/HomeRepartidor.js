@@ -84,6 +84,10 @@ class HomeRepartidorView extends Component {
     Actions.CurrentsOrdersView({dm_id});
   };
 
+  Ganancias = (viewId) => {
+    Actions.ganancias(this.props.user.response.partner_info.id);
+  };
+  
   toggleOpen = () => {
     this.setState({open: !this.state.open});
   };
@@ -149,6 +153,35 @@ class HomeRepartidorView extends Component {
               iconStyle={styles.menubarIconRight}
               onPress={() => {
                 this.OrdersDelivered();
+              }}
+            />
+          </View>
+          <View style={styles.menubarItemContainer}>
+            <Icon
+              name="dollar-bill"
+              type="foundation"
+              color="#bdbfc1"
+              iconStyle={styles.menubarIconRight}
+              onPress={() => {
+                this.Ganancias();
+              }}
+            />
+
+            <Text
+              style={styles.menubarItemText}
+              onPress={() => {
+                this.Ganancias();
+              }}>
+              {' '}
+              Ganancias
+            </Text>
+            <Icon
+              name="chevron-right"
+              type="evilicon"
+              color="#bdbfc1"
+              iconStyle={styles.menubarIconRight}
+              onPress={() => {
+                this.Ganancias();
               }}
             />
           </View>
