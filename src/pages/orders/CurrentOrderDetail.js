@@ -223,19 +223,16 @@ export default class CurrentsOrdersDetailView extends Component {
             alignItems: 'flex-start',
             padding: 10,
           }}>
-          {this.state.order.ord_status === '6' && (
-            <TouchableHighlight
-              style={[styles.buttonContainer, styles.loginButton]}
-              onPress={() => {
-                // if (this.state.order.ord_status === '0') {
-                this.recieveOrder();
-                // } else {
-                //   this.deliverOrden();
-                // }
-              }}>
-              <Text style={styles.loginText}>Pedido en Camino</Text>
-            </TouchableHighlight>
-          )}
+          {this.state.order.ord_status === '6' ||
+            (this.state.order.ord_status === '3' && (
+              <TouchableHighlight
+                style={[styles.buttonContainer, styles.loginButton]}
+                onPress={() => {
+                  this.recieveOrder();
+                }}>
+                <Text style={styles.loginText}>Pedido en Camino</Text>
+              </TouchableHighlight>
+            ))}
 
           {this.state.order.ord_status === '5' && (
             <TouchableHighlight
