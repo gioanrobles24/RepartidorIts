@@ -9,6 +9,8 @@ import {name as appName} from './app.json';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {setPushToken} from './src/redux/reducers/session';
 import {store} from './src/redux/store';
+import request from './src/utils/request';
+import {config} from './src/config';
 var PushNotification = require('react-native-push-notification');
 
 // Must be outside of any component LifeCycle (such as `componentDidMount`).
@@ -16,6 +18,18 @@ PushNotification.configure({
   // (optional) Called when Token is generated (iOS and Android)
   onRegister: function (token) {
     store.dispatch(setPushToken(token.token));
+    const user = store.getState().session.user;
+    if (user) {
+      const clientId = user.response.partner_info.id;
+      request(`${config.pushUrl}/session`, {
+        method: 'POST',
+        body: JSON.stringify({
+          userId: clientId,
+          token: token.token,
+          type: 'delivery',
+        }),
+      });
+    }
   },
 
   // (required) Called when a remote is received or opened, or local notification is opened

@@ -23,6 +23,8 @@ import {Icon, Avatar, Badge, withBadge} from 'react-native-elements';
 import {connect} from 'react-redux';
 import {unsetUser} from '../redux/reducers/session';
 import AsyncStorage from '@react-native-community/async-storage';
+import request from '../utils/request';
+import {config} from '../config';
 
 const image = {uri: 'http://dev.itsontheway.net/api/imgVerde'};
 
@@ -57,6 +59,9 @@ class HomeRepartidorView extends Component {
   };
 
   Logout = (viewId) => {
+    request(`${config.pushUrl}/session/${this.props.pushToken}`, {
+      method: 'DELETE',
+    });
     AsyncStorage.removeItem('session');
     this.props.logout();
   };
@@ -79,6 +84,10 @@ class HomeRepartidorView extends Component {
     Actions.CurrentsOrdersView({dm_id});
   };
 
+  Ganancias = (viewId) => {
+    Actions.ganancias(this.props.user.response.partner_info.id);
+  };
+  
   toggleOpen = () => {
     this.setState({open: !this.state.open});
   };
@@ -144,6 +153,35 @@ class HomeRepartidorView extends Component {
               iconStyle={styles.menubarIconRight}
               onPress={() => {
                 this.OrdersDelivered();
+              }}
+            />
+          </View>
+          <View style={styles.menubarItemContainer}>
+            <Icon
+              name="dollar-bill"
+              type="foundation"
+              color="#bdbfc1"
+              iconStyle={styles.menubarIconRight}
+              onPress={() => {
+                this.Ganancias();
+              }}
+            />
+
+            <Text
+              style={styles.menubarItemText}
+              onPress={() => {
+                this.Ganancias();
+              }}>
+              {' '}
+              Ganancias
+            </Text>
+            <Icon
+              name="chevron-right"
+              type="evilicon"
+              color="#bdbfc1"
+              iconStyle={styles.menubarIconRight}
+              onPress={() => {
+                this.Ganancias();
               }}
             />
           </View>
@@ -260,6 +298,7 @@ const mapDispatchToProps = (dispatch) => {
 const mapStateToProps = (state, ownProps) => {
   return {
     user: state.session.user,
+    pushUrl: state.session.pushUrl,
   };
 };
 
@@ -303,7 +342,8 @@ const styles = StyleSheet.create({
     borderBottomColor: '#bdbfc1',
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    width: 400,
+    width: '100%',
+    // width: 400,
     height: 55,
     marginBottom: 20,
     flexDirection: 'row',

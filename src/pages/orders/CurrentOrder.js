@@ -13,9 +13,12 @@ import {
 } from 'react-native';
 import {Actions} from 'react-native-router-flux';
 import {AirbnbRating, Rating} from 'react-native-ratings';
-import {Card, Badge} from 'react-native-elements';
+import {Badge, Avatar} from 'react-native-elements';
+import {Card} from 'react-native-shadow-cards';
 import {config} from '../../config';
-const image = {uri: 'http://dev.itsontheway.net/api/parnetBanner'};
+import request from '../../utils/request';
+import {green} from '../../colors';
+const image = {uri: `${config.apiUrl}/imgVerdePerfil`};
 
 export default class CurrentOrderView extends Component {
   constructor(props) {
@@ -23,17 +26,18 @@ export default class CurrentOrderView extends Component {
     this.state = {
       orders: [],
     };
+  }
 
+  fetchOrders() {
     let dm_id = this.props.dm_id;
     console.log('ird dm_id' + dm_id);
-    fetch(`${config.apiUrl}/delivery/current_orders/${dm_id}`, {
+    request(`${config.apiUrl}/delivery/current_orders/${dm_id}`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
     })
-      .then((response) => response.json())
       .then((responseData) => {
         console.log(responseData);
         if (responseData.status === '200') {
@@ -54,6 +58,15 @@ export default class CurrentOrderView extends Component {
       });
   }
 
+  componentDidMount() {
+    this.fetchOrders();
+    this.interval = setInterval(() => this.fetchOrders(), 30000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
   ratingCompleted(rating) {
     console.log('${rating}');
   }
@@ -66,7 +79,8 @@ export default class CurrentOrderView extends Component {
   render() {
     // for (let Object of this.state.data) {
     //         console.log(Object.prod_name);
-    // }
+    // }`
+    console.log(JSON.stringify(this.state.orders, undefined, 2));
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -83,13 +97,16 @@ export default class CurrentOrderView extends Component {
                   this.orderCurrentViewPartner(Object.id);
                 }}>
                 <Card style={styles.cardOrder}>
+                  <Avatar rounded size="medium" source={image} />
+
                   <Text style={styles.cardOrderSubTitle} h3>
                     Orden #:{Object.id}
+                    {/* {getStatus(Object.ord_status).label} */}
                   </Text>
                   <Badge
                     containerStyle={styles.cardBadge}
-                    value="Disponible"
-                    status="primary"
+                    value={getStatus(Object.ord_status).label}
+                    status={getStatus(Object.ord_status).color}
                   />
                 </Card>
               </TouchableHighlight>
@@ -101,6 +118,28 @@ export default class CurrentOrderView extends Component {
   }
 }
 
+export function getStatus(id) {
+  console.log(id);
+  switch (id) {
+    case '0':
+      return {color: 'primary', label: 'Repartidor Asignado'};
+    case '1':
+      return {color: 'primary', label: 'Sin Aprobar'};
+    case '2':
+      return {color: 'primary', label: 'Aprobada por Admin'};
+    case '3':
+      return {color: 'primary', label: 'Aprobada por Socio'};
+    case '4':
+      return {color: 'primary', label: 'Entregada Cliente'};
+    case '5':
+      return {color: 'warning', label: `It's on the way`};
+    case '6':
+      return {color: 'success', label: 'Listo para Retirar'};
+    default:
+      return {color: 'primary', label: 'Desconocido'};
+  }
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -108,15 +147,32 @@ const styles = StyleSheet.create({
     // justifyContent: "center",
   },
 
+  cardOrdercontainer: {
+    flexDirection: 'row',
+  },
+
+  cardOrder: {
+    marginTop: 30,
+    padding: 20,
+    margin: 20,
+    flexDirection: 'row',
+    elevation: 8,
+  },
+  cardOrderSubTitle: {
+    fontSize: 20,
+    marginLeft: 10,
+    alignSelf: 'center',
+  },
+
+  cardBadge: {
+    alignSelf: 'center',
+  },
+
   menuText: {
     fontSize: 25,
     alignSelf: 'flex-end',
     color: '#373535',
   },
-  cardBadge: {
-    alignSelf: 'center',
-  },
-
   partnerimage: {
     flex: 0.5,
   },

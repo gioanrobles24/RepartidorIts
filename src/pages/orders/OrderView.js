@@ -91,7 +91,6 @@ export default class OrderView extends Component {
             })
               .then((response) => response.json())
               .then((responseData) => {
-                console.log(responseData);
                 if (responseData.error) {
                   throw new Error(responseData.error);
                 } else {
@@ -99,7 +98,7 @@ export default class OrderView extends Component {
                 }
               })
               .catch((error) => {
-                Alert.alert('Error', 'intente nuevamente');
+                Alert.alert('Error', error.message);
               });
           },
         },

@@ -18,7 +18,8 @@ import MenuDrawer from 'react-native-side-drawer';
 import {Card} from 'react-native-shadow-cards';
 import {Icon, Avatar, Badge, withBadge} from 'react-native-elements';
 import {config} from '../../config';
-const image = {uri: 'http://dev.itsontheway.net/api/imgBlanca'};
+import request from '../../utils/request';
+const image = {uri: `${config.apiUrl}/imgVerdePerfil`};
 export default class TodayOrders extends Component {
   constructor(props) {
     super(props);
@@ -28,16 +29,18 @@ export default class TodayOrders extends Component {
     };
 
     console.log('hola', this.props.dm_id);
+  }
+
+  fetchOrders() {
     let dm_id = this.props.dm_id;
 
-    fetch(`${config.apiUrl}/delivery/ords_to_repartidor`, {
+    request(`${config.apiUrl}/delivery/ords_to_repartidor`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
     })
-      .then((response) => response.json())
       .then((responseData) => {
         console.log(responseData);
         if (responseData.response.status === '200') {
@@ -58,25 +61,26 @@ export default class TodayOrders extends Component {
       });
   }
 
+  componentDidMount() {
+    this.fetchOrders();
+    this.interval = setInterval(() => this.fetchOrders(), 30000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
   orderViewPartner = (id) => {
     console.log('id orden', id);
     let ord_id = id;
     let dm_id = this.props.dm_id;
     Actions.orderView({dm_id, ord_id});
   };
-  // productView = (Id,name,prod_price_bs) => {
-  //         Actions.productviewPartner(Id)
-  //     }
 
   toggleOpen = () => {
     this.setState({open: !this.state.open});
   };
 
   render() {
-    // for (let Object of this.state.orders) {
-    //          console.log(Object.prod_name);
-    //  }
-
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -95,14 +99,14 @@ export default class TodayOrders extends Component {
                 <Card
                   style={styles.cardOrder}
                   onPress={() => {
-                    this.orderViewPartner(Object);
+                    this.orderViewPartner(Object.id);
                   }}>
                   <Avatar rounded size="medium" source={image} />
                   <Text
                     style={styles.cardOrderSubTitle}
                     h3
                     onPress={() => {
-                      this.orderViewPartner(Object);
+                      this.orderViewPartner(Object.id);
                     }}>
                     Orden #:{Object.id}
                   </Text>

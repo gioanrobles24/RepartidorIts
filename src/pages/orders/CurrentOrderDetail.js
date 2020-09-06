@@ -35,14 +35,13 @@ export default class CurrentsOrdersDetailView extends Component {
     let dm_id = this.props.dm_id;
     console.log('ird orden' + ord_id);
     console.log('ird dm_id' + dm_id);
-    fetch(`${config.apiUrl}/delivery/orders_detail/${ord_id}`, {
+    request(`${config.apiUrl}/delivery/orders_detail/${ord_id}`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
     })
-      .then((response) => response.json())
       .then((responseData) => {
         console.log(responseData);
         if (responseData.status === '200') {
@@ -100,18 +99,19 @@ export default class CurrentsOrdersDetailView extends Component {
               }),
             })
               .then((responseData) => {
-                if (responseData.error) {
-                  throw new Error(responseData);
+                if (responseData.response.error) {
+                  throw new Error(responseData.response.error);
                 } else {
+                  console.log(responseData);
                   request(`${config.pushUrl}/order-in-the-way`, {
                     method: 'POST',
                     body: JSON.stringify({clientId: this.state.order.cl_id}),
                   });
-                  Actions.pop({refresh: {key: 'todayOrders'}});
+                  Actions.pop({refresh: {key: 'CurrentsOrdersView'}});
                 }
               })
               .catch((error) => {
-                Alert.alert('Error', 'intente nuevamente');
+                Alert.alert('Error', error.message);
               });
           },
         },
@@ -133,41 +133,33 @@ export default class CurrentsOrdersDetailView extends Component {
         {
           text: 'si',
           onPress: () => {
-            request(`${config.pushUrl}/order-delivered`, {
+            request(`${config.apiUrl}/delivery/order_was_delivered`, {
               method: 'POST',
               body: JSON.stringify({
-                partnerId: this.state.partner.p_id,
-                orderId: this.state.order.ord_id,
+                ord_id: this.state.order.ord_id,
+                dm_id: this.props.dm_id,
               }),
-            });
-
-            // request(`${config.apiUrl}/delivery/order_was_delivered`, {
-            //   method: 'POST',
-            //   body: JSON.stringify({
-            //     ord_id: this.state.order.ord_id,
-            //     dm_id: this.props.dm_id,
-            //   }),
-            // })
-            //   .then((responseData) => {
-            //     console.log(responseData);
-            //     if (responseData.error) {
-            //       alert('a ocurrido un error, por favor intenta nuevamente');
-            //     } else {
-            //       request(`${config.pushUrl}/order-delivered`, {
-            //         method: 'POST',
-            //         body: JSON.stringify({
-            //           partnerId: this.state.partner.p_id,
-            //           orderId: this.state.order.ord_id,
-            //         }),
-            //       });
-            //     }
-            //   })
-            //   .then((resp) => {
-            //     Actions.pop({refresh: {key: 'CurrentsOrdersView'}});
-            //   })
-            //   .catch((error) => {
-            //     console.error(error);
-            //   });
+            })
+              .then((responseData) => {
+                console.log(responseData);
+                if (responseData.error) {
+                  alert('a ocurrido un error, por favor intenta nuevamente');
+                } else {
+                  request(`${config.pushUrl}/order-delivered`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                      partnerId: this.state.partner.p_id,
+                      orderId: this.state.order.ord_id,
+                    }),
+                  });
+                }
+              })
+              .then((resp) => {
+                Actions.pop({refresh: {key: 'CurrentsOrdersView'}});
+              })
+              .catch((error) => {
+                console.error(error);
+              });
           },
         },
       ],
@@ -190,24 +182,35 @@ export default class CurrentsOrdersDetailView extends Component {
           />
         )}
         <View>
-          <Icon
-            name="gps-fixed"
-            raised
-            onPress={() => {
-              const scheme = Platform.OS === 'ios' ? 'maps:' : 'geo:';
-              const url =
-                scheme +
-                `${this.state.order.address_lat},${this.state.order.address_lon}?q=${this.state.order.address_lat},${this.state.order.address_lon}`;
-              console.log(url);
-              Linking.openURL(url);
-            }}
-            containerStyle={{
+          <View
+            style={{
               position: 'absolute',
               top: -30,
               right: 30,
+              flexDirection: 'row',
               // backgroundColor: 'white',
-            }}
-          />
+            }}>
+            <Icon
+              name="gps-fixed"
+              raised
+              onPress={() => {
+                const scheme = Platform.OS === 'ios' ? 'maps:' : 'geo:';
+                const url =
+                  scheme +
+                  `${this.state.order.address_lat},${this.state.order.address_lon}?q=${this.state.order.address_lat},${this.state.order.address_lon}`;
+                console.log(url);
+                Linking.openURL(url);
+              }}
+            />
+            <Icon
+              name="phone"
+              raised
+              onPress={() => {
+                const scheme = Platform.OS === 'ios' ? 'telprompt:' : 'tel:';
+                Linking.openURL(scheme + this.state.order.cl_phone_1);
+              }}
+            />
+          </View>
 
           <Text style={styles.Title} h1>
             Orden #: {this.state.order.ord_id}
@@ -220,21 +223,26 @@ export default class CurrentsOrdersDetailView extends Component {
             alignItems: 'flex-start',
             padding: 10,
           }}>
-          <TouchableHighlight
-            style={[styles.buttonContainer, styles.loginButton]}
-            onPress={() => {
-              if (this.state.order.ord_status === '0') {
+          {(this.state.order.ord_status === '6' ||
+            this.state.order.ord_status === '3') && (
+            <TouchableHighlight
+              style={[styles.buttonContainer, styles.loginButton]}
+              onPress={() => {
                 this.recieveOrder();
-              } else {
+              }}>
+              <Text style={styles.loginText}>Pedido en Camino</Text>
+            </TouchableHighlight>
+          )}
+
+          {this.state.order.ord_status === '5' && (
+            <TouchableHighlight
+              style={[styles.buttonContainer, styles.loginButton]}
+              onPress={() => {
                 this.deliverOrden();
-              }
-            }}>
-            <Text style={styles.loginText}>
-              {this.state.order.ord_status === '0'
-                ? 'Pedido en camino'
-                : 'Pedido fue entregado'}
-            </Text>
-          </TouchableHighlight>
+              }}>
+              <Text style={styles.loginText}>Pedido Entregado</Text>
+            </TouchableHighlight>
+          )}
 
           <View style={{width: 300}}>
             <Text style={styles.SubTitle2} h1>

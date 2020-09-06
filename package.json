@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "build-debug": "cd android && ./gradlew clean && ./gradlew assembleDebug",
+    "build-release-apk": "cd android && ./gradlew clean &&./gradlew assembleRelease",
+    "build-release-aab": "cd android &&  ./gradlew clean &&./gradlew bundleRelease",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
@@ -32,6 +35,7 @@
     "react-native-side-drawer": "^1.2.5",
     "react-native-side-menu": "^1.1.3",
     "react-native-simple-dialogs": "^1.2.1",
+    "react-native-table-component": "^1.2.1",
     "react-native-underline-tabbar": "^1.3.6",
     "react-native-vector-icons": "^7.0.0",
     "react-native-xtabbar": "^0.2.1",
