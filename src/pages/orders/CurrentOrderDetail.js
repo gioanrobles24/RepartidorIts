@@ -224,7 +224,9 @@ export default class CurrentsOrdersDetailView extends Component {
             padding: 10,
           }}>
           {(this.state.order.ord_status === '6' ||
-            this.state.order.ord_status === '3' || this.state.order.ord_status === '0') && (
+            this.state.order.ord_status === '3' ||
+            this.state.order.ord_status === '0') && (
+
             <TouchableHighlight
               style={[styles.buttonContainer, styles.loginButton]}
               onPress={() => {
