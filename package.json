@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.11.0",
+    "@react-native-community/push-notification-ios": "^1.4.1",
     "immer": "^7.0.7",
     "react": "16.11.0",
     "react-native": "0.62.2",
@@ -33,6 +34,7 @@
     "react-native-side-drawer": "^1.2.5",
     "react-native-side-menu": "^1.1.3",
     "react-native-simple-dialogs": "^1.2.1",
+    "react-native-table-component": "^1.2.1",
     "react-native-underline-tabbar": "^1.3.6",
     "react-native-vector-icons": "^7.0.0",
     "react-native-xtabbar": "^0.2.1",
@@ -53,5 +55,8 @@
   },
   "jest": {
     "preset": "react-native"
+  },
+  "resolutions": {
+    "**/**/node-gyp": "5.0.0"
   }
 }

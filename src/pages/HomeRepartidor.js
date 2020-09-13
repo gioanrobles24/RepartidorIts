@@ -31,7 +31,7 @@ const image = {uri: 'http://dev.itsontheway.net/api/imgVerde'};
 class HomeRepartidorView extends Component {
   constructor(props) {
     super(props);
-    console.log('esto llego a home' + this.props);
+    console.log('esto llego a home' + JSON.stringify(this.props.user.response.partner_info.id));
     this.state = {
       open: false,
       data: this.props.user.response.partner_info,
@@ -82,6 +82,9 @@ class HomeRepartidorView extends Component {
   CurrentsOrders = (viewId) => {
     dm_id = this.state.data.id;
     Actions.CurrentsOrdersView({dm_id});
+  };
+  Ganancias = (viewId) => {
+    Actions.ganancias(this.props.user.response.partner_info.id);
   };
 
   toggleOpen = () => {
@@ -149,6 +152,35 @@ class HomeRepartidorView extends Component {
               iconStyle={styles.menubarIconRight}
               onPress={() => {
                 this.OrdersDelivered();
+              }}
+            />
+          </View>
+          <View style={styles.menubarItemContainer}>
+            <Icon
+              name="dollar-bill"
+              type="foundation"
+              color="#bdbfc1"
+              iconStyle={styles.menubarIconRight}
+              onPress={() => {
+                this.Ganancias();
+              }}
+            />
+
+            <Text
+              style={styles.menubarItemText}
+              onPress={() => {
+                this.Ganancias();
+              }}>
+              {' '}
+              Ganancias
+            </Text>
+            <Icon
+              name="chevron-right"
+              type="evilicon"
+              color="#bdbfc1"
+              iconStyle={styles.menubarIconRight}
+              onPress={() => {
+                this.Ganancias();
               }}
             />
           </View>
