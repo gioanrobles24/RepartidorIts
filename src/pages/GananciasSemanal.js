@@ -36,7 +36,7 @@ export default class GananciasSemanalView extends Component {
       ganancia: '0',
       historial: '',
     };
-    fetch(`${config.apiUrl}/ganacia_repartidor_dia/${socioid}`, {
+    fetch(`http://192.168.0.104:8000/api/ganacia_repartidor_dia/${socioid}`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',

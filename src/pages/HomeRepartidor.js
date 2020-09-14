@@ -87,6 +87,10 @@ class HomeRepartidorView extends Component {
     Actions.ganancias(this.props.user.response.partner_info.id);
   };
 
+  Ganancias = (viewId) => {
+    Actions.ganancias(this.props.user.response.partner_info.id);
+  };
+  
   toggleOpen = () => {
     this.setState({open: !this.state.open});
   };
@@ -341,7 +345,8 @@ const styles = StyleSheet.create({
     borderBottomColor: '#bdbfc1',
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    width: 400,
+    width: '100%',
+    // width: 400,
     height: 55,
     marginBottom: 20,
     flexDirection: 'row',

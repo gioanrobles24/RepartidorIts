@@ -124,7 +124,6 @@ export default class GananciasView extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingLeft:30,
     },
     headers: {
         flex: 0.3,

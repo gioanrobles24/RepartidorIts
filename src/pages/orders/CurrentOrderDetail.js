@@ -20,6 +20,7 @@ import {Card, Badge, Icon} from 'react-native-elements';
 import AutoHeightImage from 'react-native-auto-height-image';
 import {config} from '../../config';
 import request from '../../utils/request';
+import moment from 'moment';
 const image = {uri: 'http://dev.itsontheway.net/api/parnetBanner'};
 
 export default class CurrentsOrdersDetailView extends Component {
@@ -45,11 +46,29 @@ export default class CurrentsOrdersDetailView extends Component {
       .then((responseData) => {
         console.log(responseData);
         if (responseData.status === '200') {
+          let leftTime;
+
+          if (
+            responseData.response.order.order_approved &&
+            responseData.response.order.order_time
+          ) {
+            let orderApproved = moment(
+              responseData.response.order.order_approved,
+              'DD-MM-YYYY HH:mm:ss',
+            ).add(responseData.response.order.order_time, 'minutes');
+            let currentTime = moment(
+              responseData.response.order.current_time,
+              'DD-MM-YYYY HH:mm:ss',
+            );
+            leftTime = orderApproved.diff(currentTime, 'minutes');
+          }
+
           this.setState(
             {
               order: responseData.response.order,
               order_productos: responseData.response.order_productos,
               partner: responseData.response.order_partner,
+              leftTime,
             },
             () => {
               console.log(
@@ -71,6 +90,18 @@ export default class CurrentsOrdersDetailView extends Component {
       .catch((error) => {
         console.error(error);
       });
+  }
+
+  componentDidMount() {
+    this.interval = setInterval(() => {
+      if (this.state.leftTime) {
+        this.setState((state) => ({...state, leftTime: state.leftTime - 1}));
+      }
+    }, 60000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   ratingCompleted(rating) {
@@ -168,9 +199,6 @@ export default class CurrentsOrdersDetailView extends Component {
   }
 
   render() {
-    // for (let Object of this.state.data) {
-    //         console.log(Object.prod_name);
-    // }
     return (
       <View style={styles.container}>
         {this.state.partner && (
@@ -223,15 +251,14 @@ export default class CurrentsOrdersDetailView extends Component {
             alignItems: 'flex-start',
             padding: 10,
           }}>
-          {this.state.order.ord_status === '6' && (
+          {(this.state.order.ord_status === '6' ||
+            this.state.order.ord_status === '3' ||
+            this.state.order.ord_status === '0') && (
+
             <TouchableHighlight
               style={[styles.buttonContainer, styles.loginButton]}
               onPress={() => {
-                // if (this.state.order.ord_status === '0') {
                 this.recieveOrder();
-                // } else {
-                //   this.deliverOrden();
-                // }
               }}>
               <Text style={styles.loginText}>Pedido en Camino</Text>
             </TouchableHighlight>
@@ -281,6 +308,18 @@ export default class CurrentsOrdersDetailView extends Component {
                 </Text>
               ))}
             </View>
+            {!!this.state.leftTime && (
+              <View style={{marginTop: 30}}>
+                <Text style={{alignSelf: 'center', marginBottom: 10}}>
+                  Tiempo de preparación
+                </Text>
+                <View style={[styles.buttonContainer, styles.loginButton]}>
+                  <Text style={styles.loginText}>
+                    {this.state.leftTime} min.
+                  </Text>
+                </View>
+              </View>
+            )}
           </ScrollView>
         </View>
       </View>
