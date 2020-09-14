@@ -183,6 +183,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     borderBottomColor: '#FFFFFF',
     flex: 1,
+    color:"black"
   },
   inputIcon: {
     width: 30,

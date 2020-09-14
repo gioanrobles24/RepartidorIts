@@ -20,8 +20,14 @@ export default class GananciasView extends Component {
         console.log('id de socio' + this.props.data);
         let socioid = this.props.data;
     }
-    GananciaSemanal = (viewId) => {
+    GananciaDia = (viewId) => {
         Actions.gananciasSemanal(this.props.data);
+    };
+    PagosAcumulados = (viewId) => {
+        Actions.pagosAcumulados(this.props.data);
+    };
+    PagosRecibidos = (viewId) => {
+        Actions.pagosRecibidos(this.props.data);
     };
     HistorialMensual = (viewId) => {
         Actions.historialMensual(this.props.data);
@@ -37,10 +43,10 @@ export default class GananciasView extends Component {
                         <Text
                         style={styles.menubarItemText}
                         onPress={() => {
-                            this.GananciaSemanal();
+                            this.GananciaDia();
                         }}>
                         {' '}
-                        Ganancias de la Semana
+                        Ganancias del día
                         </Text>
                         <Icon
                         name="chevron-right"
@@ -48,7 +54,45 @@ export default class GananciasView extends Component {
                         color="#bdbfc1"
                         iconStyle={styles.menubarIconRight}
                         onPress={() => {
-                            this.GananciaSemanal();
+                            this.GananciaDia();
+                        }}
+                        />
+                    </View>
+                    <View style={styles.menubarItemContainer}>
+                        <Text
+                        style={styles.menubarItemText}
+                        onPress={() => {
+                            this.PagosAcumulados();
+                        }}>
+                        {' '}
+                        Acumulados por pagar
+                        </Text>
+                        <Icon
+                        name="chevron-right"
+                        type="evilicon"
+                        color="#bdbfc1"
+                        iconStyle={styles.menubarIconRight}
+                        onPress={() => {
+                            this.PagosAcumulados();
+                        }}
+                        />
+                    </View>
+                    <View style={styles.menubarItemContainer}>
+                        <Text
+                        style={styles.menubarItemText}
+                        onPress={() => {
+                            this.PagosRecibidos();
+                        }}>
+                        {' '}
+                        Pagos recibidos
+                        </Text>
+                        <Icon
+                        name="chevron-right"
+                        type="evilicon"
+                        color="#bdbfc1"
+                        iconStyle={styles.menubarIconRight}
+                        onPress={() => {
+                            this.PagosRecibidos();
                         }}
                         />
                     </View>
@@ -82,7 +126,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     headers: {
-        flex: 0.2,
+        flex: 0.3,
         fontSize: 28,
         flexDirection: 'row',
         alignItems: 'center',
@@ -101,8 +145,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        flex: 0.2,
-        marginLeft:20,
+        flex: 0.3,
     },
 
     menubarItemContainer: {

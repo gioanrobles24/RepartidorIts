@@ -31,7 +31,7 @@ const image = {uri: 'http://dev.itsontheway.net/api/imgVerde'};
 class HomeRepartidorView extends Component {
   constructor(props) {
     super(props);
-    console.log('esto llego a home' + this.props);
+    console.log('esto llego a home' + JSON.stringify(this.props.user.response.partner_info.id));
     this.state = {
       open: false,
       data: this.props.user.response.partner_info,
@@ -82,6 +82,9 @@ class HomeRepartidorView extends Component {
   CurrentsOrders = (viewId) => {
     dm_id = this.state.data.id;
     Actions.CurrentsOrdersView({dm_id});
+  };
+  Ganancias = (viewId) => {
+    Actions.ganancias(this.props.user.response.partner_info.id);
   };
 
   Ganancias = (viewId) => {

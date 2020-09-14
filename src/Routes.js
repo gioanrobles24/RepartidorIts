@@ -11,6 +11,8 @@ import RepartidorRateView from './pages/RepartidorRate';
 import GananciasView from './pages/Ganancias';
 import GananciasSemanalView from './pages/GananciasSemanal';
 import HistorialMensualView from './pages/HistorialMensual';
+import PagosAcumuladosView from './pages/PagosAcumulados';
+import PagosRecibidosView from './pages/PagosRecibidos';
 import {useSelector, useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
 import {setUser} from './redux/reducers/session';
@@ -109,6 +111,16 @@ function AuthApp() {
           key="historialMensual"
           hideNavBar={false}
           component={HistorialMensualView}
+        />
+        <Scene
+          key="pagosAcumulados"
+          hideNavBar={false}
+          component={PagosAcumuladosView}
+        />
+        <Scene
+          key="pagosRecibidos"
+          hideNavBar={false}
+          component={PagosRecibidosView}
         />
       </Scene>
     </Router>

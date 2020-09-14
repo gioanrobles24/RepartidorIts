@@ -27,16 +27,16 @@ import {
 } from 'react-native-table-component';
 import {config} from '../config';
 const image = require('../assets/money.png' );
-export default class GananciasSemanalView extends Component {
+export default class PagosRecibidosView extends Component {
   constructor(props) {
     super(props);
     console.log('id de socio' + this.props.data);
     let socioid = this.props.data;
     this.state = {
-      ganancia: '0',
+      data: '0',
       historial: '',
     };
-    fetch(`http://192.168.0.104:8000/api/ganacia_repartidor_dia/${socioid}`, {
+    fetch(`${config.apiUrl}/pagos_recibidos/${socioid}`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -46,7 +46,7 @@ export default class GananciasSemanalView extends Component {
       .then((response) => response.json())
       .then((responseData) => {
         console.log(
-          'hola otra vez' + JSON.stringify(responseData),
+        //   'hola otra vez' + JSON.stringify(responseData.response.historial),
         );
         if (responseData.response === undefined) {
           alert('Aun no tienes datos para consultar');
@@ -55,8 +55,7 @@ export default class GananciasSemanalView extends Component {
           //   this.percent_bs = responseData.response.porcentaje_bs;
           this.setState(
             {
-              ganancia: responseData.response.ganancia,
-              historial: responseData.response.historial,
+              data: responseData.response.data,
             },
             () => {
               console
@@ -73,54 +72,20 @@ export default class GananciasSemanalView extends Component {
   }
 
   render() {
-    const total_ganancia=this.state.ganancia;
-    const historial = this.state.historial;
-     const ord_ID = [];
-     const fecha = [];
-     const ganancia = [];
-    // console.log("LENGTH", historial.length)
-    for (let i = 0; i < historial.length; i++) {
-        // console.log(historial[i].sum);
-        ord_ID.push(historial[i].ord_id);
-        fecha.push(historial[i].fecha);
-        ganancia.push(historial[i].ganancia);
+    const data = this.state.data;
+    const ord_ID = [];
+    const fecha = [];
+    const ganancia = [];
+    console.log("LENGTH", data)
+    for (let i = 0; i < data.length; i++) {
+        ord_ID.push(data[i].id);
+        fecha.push(data[i].fecha);
+        ganancia.push(data[i].dm_pay_amount);
     }
     return (
       <View style={styles.container}>
         <View style={styles.headers}>
-          <Text style={styles.Title}>Ganancias del Día</Text>
-        </View>
-        <View style={styles.contentPorcentaje}>
-          <View style={styles.imgeAvatar}>
-            <Avatar
-              overlayContainerStyle={{backgroundColor: 'transparent'}}
-              containerStyle={{
-                elevation: 6,
-                backgroundColor: 'white',
-                marginStart: 12,
-                width: 68,
-                height: 68,
-              }}
-              source={image}
-            />
-          </View>
-          <View style={styles.titleMount}>
-            <View style={styles.nota}>
-              <Text style={{color: green, fontSize: 22, fontWeight: '700'}}>
-                Bs
-              </Text>
-              <Text
-                style={{
-                  color: 'black',
-                  fontSize: 21,
-                  fontWeight: '600',
-                  marginLeft: 8,
-                }}>
-                {total_ganancia}
-              </Text>
-            </View>
-            <Text style={{color: 'gray', fontSize: 15}}>Total generado en el día</Text>
-          </View>
+          <Text style={styles.Title}>Pagos recibidos</Text>
         </View>
         <SafeAreaView
           style={styles.safeContainer}
@@ -130,7 +95,7 @@ export default class GananciasSemanalView extends Component {
               <View style={styles.containerTable}>
                 <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
                   <Row
-                    data={['Orden', 'Fecha', 'Ganancia']}
+                    data={['Nº de Pago', 'Fecha', 'Pagado']}
                     style={styles.HeadStyle}
                     textStyle={styles.TableTextHead}
                   />
