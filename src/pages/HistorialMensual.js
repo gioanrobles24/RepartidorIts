@@ -78,7 +78,7 @@ export default class HistorialMensualView extends Component {
     const ord_ID = [];
     const fecha = [];
     const ganancia = [];
-    console.log('LENGTH', historial.length);
+    console.log('LENGTH', historial);
     for (let i = 0; i < historial.length; i++) {
       console.log(historial[i].sum);
       ord_ID.push(historial[i].id);
